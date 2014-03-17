@@ -20,7 +20,7 @@ Translate requests into method calls.
 ```php
 <?php
 require_once 'Router.php';
-use lazy\Router;
+use lazyrouter\Router;
 
 $router = new Router();
 $router->route(function() {}, function() {});
