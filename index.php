@@ -2,7 +2,7 @@
 
 require_once 'src/lazyrouter/Router.php';
 
-use lazy\Router;
+use lazyrouter\Router;
 
 $router = new Router();
 
