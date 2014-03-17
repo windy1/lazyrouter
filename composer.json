@@ -20,5 +20,3 @@
         }
     }
 }
-
-'lazyrouter' => array($vendorDir . '/windy/lazyrouter/src'),
