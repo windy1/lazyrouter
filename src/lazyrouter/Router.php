@@ -4,17 +4,44 @@ namespace lazy;
 
 use ReflectionMethod;
 
+/**
+ * Class for routing requests to their appropriate class methods. Classes should be defined in the specified
+ * controller directory and should have their file name named the same as the class.
+ *
+ * For example, a request such as 'hello/world' would call a method called 'world()' in a class called 'hello' in the
+ * controller directory. The method will be called if and only if the method is both public and not static.
+ *
+ * @author Walker Crouse
+ * @example ../../index.php
+ * @package lazy
+ */
 class Router {
     private $controllerDir;
 
+    /**
+     * Creates a new Router with the specified directory for containing the controllers.
+     *
+     * @param string $controllerDir container for controllers
+     */
     public function __construct($controllerDir = 'controllers') {
         $this->controllerDir = $controllerDir;
     }
 
+    /**
+     * Returns the containing directory for controllers.
+     *
+     * @return string controller directory
+     */
     public function getControllerDir() {
         return $this->controllerDir;
     }
 
+    /**
+     * Routes the current $_SERVER['REQUEST_URI'] to its appropriate method call.
+     *
+     * @param $failCallback callback for if the current REQUEST_URI could not be routed
+     * @param $succeedCallback callback for after the method was called
+     */
     public function route($failCallback, $succeedCallback) {
         $request = self::parse_request();
         if (!$this->call_method($request['class'], $request['method'])) {
@@ -26,7 +53,9 @@ class Router {
 
     private function call_method($class, $method) {
         // include the file
-        $file = $this->controllerDir."/$class.php";
+        $name = explode('\\', $class);
+        $base = $name[sizeof($name)-1];
+        $file = $this->controllerDir."/$base.php";
         if (!file_exists($file)) return false;
         require_once $file;
 
@@ -37,7 +66,7 @@ class Router {
         // check if the method exists and is public
         if (!method_exists($controller, $method)) return false;
         $reflection = new ReflectionMethod($controller, $method);
-        if (!$reflection->isPublic()) return false;
+        if (!$reflection->isPublic() || $reflection->isStatic()) return false;
 
         // call the method and return true
         $controller->$method();
