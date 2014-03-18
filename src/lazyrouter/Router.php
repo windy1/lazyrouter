@@ -41,8 +41,10 @@ class Router {
      *
      * @param $failCallback callback for if the current REQUEST_URI could not be routed
      * @param $succeedCallback callback for after the method was called
+     * @param $requestUri string optional request uri to parse, if this is not specified it will be grabbed from the
+     *        server.
      */
-    public function route($failCallback, $succeedCallback) {
+    public function route(callable $failCallback, callable $succeedCallback, $requestUri = null) {
         $request = self::parse_request();
         if (!$this->call_method($request['class'], $request['method'])) {
             $failCallback();
@@ -73,8 +75,8 @@ class Router {
         return true;
     }
 
-    private static function parse_request() {
-        $requestUri = $_SERVER['REQUEST_URI'];
+    private static function parse_request($requestUri = null) {
+        if ($requestUri == null) $requestUri = $_SERVER['REQUEST_URI'];
         $scriptName = $_SERVER['SCRIPT_NAME'];
 
         // put URI elements into arrays
