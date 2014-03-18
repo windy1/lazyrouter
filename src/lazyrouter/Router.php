@@ -45,7 +45,7 @@ class Router {
      *        server.
      */
     public function route(callable $failCallback, callable $succeedCallback, $requestUri = null) {
-        $request = self::parse_request();
+        $request = self::parse_request($requestUri);
         if (!$this->call_method($request['class'], $request['method'])) {
             $failCallback();
         } else {
